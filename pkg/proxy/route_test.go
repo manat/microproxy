@@ -1,4 +1,4 @@
-package http_test
+package proxy_test
 
 import (
 	"encoding/json"

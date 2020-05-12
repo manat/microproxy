@@ -1,4 +1,4 @@
-package http
+package proxy
 
 type Route struct {
 	Destinations []Destination `json:"destinations"`
