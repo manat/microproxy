@@ -1,0 +1,29 @@
+{
+    "destinations": [
+        {
+            "id": "mock1",
+            "url": "http://example1.com",
+            "default": true
+        },
+        {
+            "id": "mock2",
+            "url": "http://example2.com"
+        }
+    ],
+    "rules": [
+        {
+            "path": "/orders/get_escrow_detail",
+            "payload": {
+                "shopid": 1234
+            },
+            "destination_id": "mock1"
+        },
+        {
+            "path": "/orders/get_escrow_detail",
+            "payload": {
+                "shopid": 5678
+            },
+            "destination_id": "mock2"
+        }
+    ]
+}
