@@ -6,23 +6,29 @@ import (
 	"os"
 )
 
+// Route represents info required for forwarding request to multiple destinations,
+// based on the specified rules.
 type Route struct {
 	Destinations []Destination `json:"destinations"`
 	Rules        []Rule        `json:"rules"`
 }
 
+// Destination represents info of the destination node.
 type Destination struct {
 	ID      string `json:"id"`
 	URL     string `json:"url"`
 	Default bool   `json:"default"`
 }
 
+// Rule represents info of how the MicroProxy determines routes based on info such as path,
+// and payload.
 type Rule struct {
 	Path          string                 `json:"path"`
 	Payload       map[string]interface{} `json:"payload"`
 	DestinationID string                 `json:"destination_id"`
 }
 
+// NewRoute constructs Route based on the given JSON file.
 func NewRoute(filePath string) *Route {
 	jf, err := os.Open(filePath)
 	if err != nil {
