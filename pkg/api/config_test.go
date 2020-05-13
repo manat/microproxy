@@ -10,10 +10,12 @@ import (
 )
 
 func TestConfigHandler(t *testing.T) {
-	t.Run("GET /config should return 200 OK", func(t *testing.T) {
+	const ConfigPath = "/config"
+
+	t.Run("GET config should return 200 OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
 		handler := http.HandlerFunc(api.ConfigHandler)
-		req, err := http.NewRequest(http.MethodGet, "/config", nil)
+		req, err := http.NewRequest(http.MethodGet, ConfigPath, nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -29,10 +31,10 @@ func TestConfigHandler(t *testing.T) {
 		assert.Equal(t, expectedBody, actualBody)
 	})
 
-	t.Run("POST /config should return 201 CREATED", func(t *testing.T) {
+	t.Run("PUT config should return 201 CREATED", func(t *testing.T) {
 		rec := httptest.NewRecorder()
 		handler := http.HandlerFunc(api.ConfigHandler)
-		req, err := http.NewRequest(http.MethodPost, "/config", nil)
+		req, err := http.NewRequest(http.MethodPut, ConfigPath, nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -43,26 +45,26 @@ func TestConfigHandler(t *testing.T) {
 		actualCode := rec.Code
 		assert.Equal(t, expectedCode, actualCode)
 
-		expectedBody := `{"message": "created successfully"}`
+		expectedBody := `{"message": "updated successfully"}`
 		actualBody := rec.Body.String()
 		assert.Equal(t, expectedBody, actualBody)
 	})
 
-	t.Run("PUT /config should return 201 CREATED", func(t *testing.T) {
+	t.Run("PATCH config should return 501 NOT IMPLEMENTED", func(t *testing.T) {
 		rec := httptest.NewRecorder()
 		handler := http.HandlerFunc(api.ConfigHandler)
-		req, err := http.NewRequest(http.MethodPut, "/config", nil)
+		req, err := http.NewRequest(http.MethodPatch, ConfigPath, nil)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		handler.ServeHTTP(rec, req)
 
-		expectedCode := http.StatusCreated
+		expectedCode := http.StatusNotImplemented
 		actualCode := rec.Code
 		assert.Equal(t, expectedCode, actualCode)
 
-		expectedBody := `{"message": "created successfully"}`
+		expectedBody := `{"message": "Only GET and PUT is supported"}`
 		actualBody := rec.Body.String()
 		assert.Equal(t, expectedBody, actualBody)
 	})
