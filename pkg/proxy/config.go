@@ -1,8 +1,11 @@
 package proxy
 
-// Config is a centralized object that holds every configuration value.
+// AppConfig provides a way for injecting config from the main package.
+var AppConfig *Config
+
+// Config represents structure of MicroProxy config.
 type Config struct {
-	Route *Route
+	Route *Route `json:"route"`
 }
 
 // NewConfig constructs MicroProxy's Config from files, and environment values.
