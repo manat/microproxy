@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/json"
@@ -48,12 +49,17 @@ func main() {
 	// Injecting *config to other packages
 	api.ProxyConfig = config
 
-	log.Println("Booting server...")
 	http.HandleFunc("/config", api.ConfigHandler)
 	http.HandleFunc("/", proxy.HandleRequestThenRedirect)
 
-	log.Println("Ready to route HTTP requests")
-	if err := http.ListenAndServe(":1338", nil); err != nil {
+	log.Println("Booting server...")
+	server := &http.Server{
+		Addr:         ":1338",
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 60 * time.Second,
+	}
+	log.Println("Ready to route HTTP request")
+	if err := server.ListenAndServe(); err != nil {
 		panic(err)
 	}
 }
