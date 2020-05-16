@@ -20,7 +20,7 @@ func loadConfig(filePath string, reload bool) *proxy.Config {
 	}
 	log.Println("Route = ", k.String("route"))
 
-	var c proxy.Config
+	c := proxy.Config{FilePath: &filePath}
 	k.Unmarshal("", &c)
 
 	if reload {
@@ -40,12 +40,13 @@ func loadConfig(filePath string, reload bool) *proxy.Config {
 }
 
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
 	config := loadConfig("config.json", true)
 	log.Println(config)
 
 	// Injecting *config to other packages
-	api.AppConfig = config
-	proxy.AppConfig = config
+	api.ProxyConfig = config
 
 	log.Println("Booting server...")
 	http.HandleFunc("/config", api.ConfigHandler)
