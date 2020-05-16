@@ -25,7 +25,8 @@ func ConfigHandler(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusOK)
 		res.Write(cfg)
 	case "PUT":
-		b, err := ioutil.ReadAll(req.Body)
+		r := http.MaxBytesReader(res, req.Body, 200_000)
+		b, err := ioutil.ReadAll(r)
 		if err != nil {
 			http.Error(res, err.Error(), 500)
 			return
