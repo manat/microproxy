@@ -8,21 +8,19 @@ import (
 	"strings"
 )
 
-func HandleRequestThenRedirect(res http.ResponseWriter, req *http.Request) {
+func RedirectHandler(res http.ResponseWriter, req *http.Request) {
 	url := getDestination(req)
 
 	serveReverseProxy(url, res, req)
+
 }
 
 // Serve a reverse proxy for a given url
 func serveReverseProxy(target string, res http.ResponseWriter, req *http.Request) {
-	// parse the url
 	url, _ := url.Parse(target)
-
-	// create the reverse proxy
 	proxy := httputil.NewSingleHostReverseProxy(url)
 
-	// Update the headers to allow for SSL redirection
+	// Updates the headers to allow for SSL redirection
 	req.URL.Host = url.Host
 	req.URL.Scheme = url.Scheme
 	req.Header.Set("X-Forwarded-Host", req.Header.Get("Host"))

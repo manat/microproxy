@@ -10,18 +10,21 @@ import (
 	"github.com/knadh/koanf/providers/file"
 
 	"github.com/manat/microproxy/pkg/api"
+	"github.com/manat/microproxy/pkg/config"
 	"github.com/manat/microproxy/pkg/proxy"
 )
 
-func loadConfig(filePath string, reload bool) *proxy.Config {
+func loadConfig(filePath string, reload bool) {
 	k := koanf.New(".")
 	f := file.Provider(filePath)
 	if err := k.Load(f, json.Parser()); err != nil {
 		log.Fatalf("Error loading config: %v", err)
+		panic(err)
 	}
 	log.Println("Route = ", k.String("route"))
 
-	c := proxy.Config{FilePath: &filePath}
+	c := config.Instance
+	c.FilePath = filePath
 	k.Unmarshal("", &c)
 
 	if reload {
@@ -36,21 +39,15 @@ func loadConfig(filePath string, reload bool) *proxy.Config {
 			k.Unmarshal("", &c)
 		})
 	}
-
-	return &c
 }
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	config := loadConfig("config.json", true)
-	log.Println(config)
-
-	// Injecting *config to other packages
-	api.ProxyConfig = config
+	loadConfig("config.json", true)
 
 	http.HandleFunc("/config", api.ConfigHandler)
-	http.HandleFunc("/", proxy.HandleRequestThenRedirect)
+	http.HandleFunc("/", proxy.RedirectHandler)
 
 	log.Println("Booting server...")
 	server := &http.Server{

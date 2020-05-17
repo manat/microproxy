@@ -10,18 +10,17 @@ import (
 	"testing"
 
 	"github.com/manat/microproxy/pkg/api"
-	"github.com/manat/microproxy/pkg/proxy"
+	"github.com/manat/microproxy/pkg/config"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestConfigHandler(t *testing.T) {
 	const apiConfigPath = "/config"
 
-	configFilePath := "../../test/data/route_1.json"
-	api.ProxyConfig = &proxy.Config{
-		FilePath: &configFilePath,
-		Route:    proxy.NewRoute(configFilePath),
-	}
+	cfgFilePath := "../../test/data/route_1.json"
+	cfg := config.Instance
+	cfg.FilePath = cfgFilePath
+	cfg.Route = *config.NewRoute(cfgFilePath)
 
 	t.Run("GET config should return 200 OK", func(t *testing.T) {
 		rec := httptest.NewRecorder()
@@ -37,7 +36,7 @@ func TestConfigHandler(t *testing.T) {
 		actualCode := rec.Code
 		assert.Equal(t, expectedCode, actualCode)
 
-		expectedBody, err := json.Marshal(&api.ProxyConfig)
+		expectedBody, err := json.Marshal(cfg)
 		if err != nil {
 			panic(err)
 		}
@@ -55,14 +54,13 @@ func TestConfigHandler(t *testing.T) {
 			panic(err)
 		}
 		defer os.Remove(tmpFile.Name())
-		tmpFilePath := tmpFile.Name()
-		api.ProxyConfig.FilePath = &tmpFilePath
+		cfg.FilePath = tmpFile.Name()
 
-		cfg, err := json.Marshal(api.ProxyConfig)
+		c, err := json.Marshal(cfg)
 		if err != nil {
 			panic(err)
 		}
-		body := bytes.NewBuffer(cfg)
+		body := bytes.NewBuffer(c)
 
 		req, err := http.NewRequest(http.MethodPut, apiConfigPath, body)
 		if err != nil {

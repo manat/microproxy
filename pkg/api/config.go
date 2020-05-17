@@ -5,18 +5,15 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/manat/microproxy/pkg/proxy"
+	"github.com/manat/microproxy/pkg/config"
 )
-
-// ProxyConfig provides a way for injecting config from the main package.
-var ProxyConfig *proxy.Config
 
 // ConfigHandler handle read, and updating config for MicroProxy.
 func ConfigHandler(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
 	switch req.Method {
 	case "GET":
-		cfg, err := json.Marshal(ProxyConfig)
+		cfg, err := json.Marshal(config.Instance)
 		if err != nil {
 			http.Error(res, err.Error(), 500)
 			return
@@ -33,7 +30,7 @@ func ConfigHandler(res http.ResponseWriter, req *http.Request) {
 		}
 		defer req.Body.Close()
 
-		_, err = ProxyConfig.Save(b)
+		_, err = config.Instance.Save(b)
 		if err != nil {
 			http.Error(res, err.Error(), 500)
 			return
