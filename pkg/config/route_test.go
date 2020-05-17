@@ -1,7 +1,6 @@
 package config_test
 
 import (
-	"log"
 	"testing"
 
 	"github.com/manat/microproxy/pkg/config"
@@ -26,24 +25,28 @@ func TestNewRoute(t *testing.T) {
 
 func TestReadRoute(t *testing.T) {
 	route := config.NewRoute("../../test/data/route_1.json")
-	log.Println(route.Rules[0].Payload["shopid"])
 
 	t.Run("route_1.json should be marshall into Route object properly", func(t *testing.T) {
 		expected := &config.Route{
 			Destinations: []config.Destination{
 				{ID: "mock1", URL: "http://example1.com", Default: true},
 				{ID: "mock2", URL: "http://example2.com"},
+				{ID: "mock3", URL: "http://example3.com"},
 			},
 			Rules: []config.Rule{
 				{
-					Path:          "/orders/get_escrow_detail",
+					Path:          "/orders/escrow_detail",
 					Payload:       map[string]interface{}{"shopid": float64(1234)},
 					DestinationID: "mock1",
 				},
 				{
-					Path:          "/orders/get_escrow_detail",
+					Path:          "/orders/escrow_detail",
 					Payload:       map[string]interface{}{"shopid": float64(5678)},
 					DestinationID: "mock2",
+				},
+				{
+					Path:          "/expenses",
+					DestinationID: "mock3",
 				},
 			},
 		}

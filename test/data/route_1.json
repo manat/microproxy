@@ -8,22 +8,30 @@
         {
             "id": "mock2",
             "url": "http://example2.com"
+        },
+        {
+            "id": "mock3",
+            "url": "http://example3.com"
         }
     ],
     "rules": [
         {
-            "path": "/orders/get_escrow_detail",
+            "path": "/orders/escrow_detail",
             "payload": {
                 "shopid": 1234
             },
             "destination_id": "mock1"
         },
         {
-            "path": "/orders/get_escrow_detail",
+            "path": "/orders/escrow_detail",
             "payload": {
                 "shopid": 5678
             },
             "destination_id": "mock2"
+        },
+        {
+            "path": "/expenses",
+            "destination_id": "mock3"
         }
     ]
 }

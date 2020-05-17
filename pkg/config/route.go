@@ -2,6 +2,8 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 )
@@ -24,7 +26,7 @@ type Destination struct {
 // and payload.
 type Rule struct {
 	Path          string                 `json:"path"`
-	Payload       map[string]interface{} `json:"payload"`
+	Payload       map[string]interface{} `json:"payload,omitempty"`
 	DestinationID string                 `json:"destination_id"`
 }
 
@@ -47,4 +49,15 @@ func NewRoute(filePath string) *Route {
 	}
 
 	return &route
+}
+
+func (r *Route) GetDestinationByID(id string) (*Destination, error) {
+	for _, d := range r.Destinations {
+		if d.ID == id {
+			return &d, nil
+		}
+	}
+
+	msg := fmt.Sprintf("Destination ID: %s does not exist", id)
+	return nil, errors.New(msg)
 }
