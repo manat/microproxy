@@ -45,7 +45,8 @@ func (c *Config) Save(b []byte) (int, error) {
 	}
 	defer f.Close()
 
-	n, err := f.Write(b)
+	f.Truncate(0)
+	n, err := f.WriteAt(b, 0)
 	if err != nil {
 		return -1, err
 	}
