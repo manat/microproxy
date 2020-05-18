@@ -40,12 +40,10 @@ func loadConfig(reload bool) {
 		panic(err)
 	}
 
-	// log.Println(k.String("server.port"))
-	// log.Println(config.Instance.Server.Port)
 	log.Println(k.All())
-
 	c := config.Instance
-	k.Unmarshal("", &c)
+	c.FilePath = filePath
+	k.UnmarshalWithConf("", &c, koanf.UnmarshalConf{Tag: "json"})
 
 	if reload {
 		f.Watch(func(event interface{}, err error) {
@@ -56,7 +54,7 @@ func loadConfig(reload bool) {
 
 			log.Println("Config changed. Reloading...")
 			k.Load(f, json.Parser())
-			k.Unmarshal("", &c)
+			k.UnmarshalWithConf("", &c, koanf.UnmarshalConf{Tag: "json"})
 		})
 	}
 }
