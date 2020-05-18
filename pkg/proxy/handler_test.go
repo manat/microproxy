@@ -16,7 +16,8 @@ func TestGetDestination(t *testing.T) {
 	cfg.Route = *config.NewRoute("../../test/data/route_1.json")
 
 	t.Run("When path is /expenses, then destination should be mock3", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/expenses", nil)
+		var body []byte
+		req, err := http.NewRequest(http.MethodGet, "/expenses", bytes.NewBuffer(body))
 		if err != nil {
 			t.Fatal(err)
 		}

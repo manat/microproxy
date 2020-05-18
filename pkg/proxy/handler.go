@@ -1,7 +1,9 @@
 package proxy
 
 import (
+	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -13,7 +15,8 @@ import (
 
 func RedirectHandler(res http.ResponseWriter, req *http.Request) {
 	dest := GetDestination(req)
-	if dest == nil {
+	log.Println(dest)
+	if dest.ID == "" {
 		serveReverseProxy(req.URL.String(), res, req)
 		return
 	}
@@ -24,12 +27,11 @@ func RedirectHandler(res http.ResponseWriter, req *http.Request) {
 func GetDestination(req *http.Request) *config.Destination {
 	var dest *config.Destination
 
-	data, err := httputil.DumpRequest(req, true)
+	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
-	sdata := string(data)
-	sbody := strings.Split(sdata, "\n")
+	req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 
 	for _, r := range config.Instance.Route.Rules {
 		if strings.Contains(req.URL.String(), r.Path) {
@@ -39,10 +41,9 @@ func GetDestination(req *http.Request) *config.Destination {
 				panic(err)
 			}
 
-			actualBody := strings.TrimSpace(sbody[len(sbody)-1])
-			if actualBody != "" {
+			if len(body) > 0 {
 				jsonMap := make(map[string]interface{})
-				if err = json.Unmarshal([]byte(actualBody), &jsonMap); err != nil {
+				if err = json.Unmarshal([]byte(body), &jsonMap); err != nil {
 					panic(err)
 				}
 				log.Println(jsonMap)
@@ -53,28 +54,30 @@ func GetDestination(req *http.Request) *config.Destination {
 					if err != nil {
 						panic(err)
 					}
+					log.Println(dest)
 					return dest
 				}
 			}
 		}
 	}
 
-	return nil
+	return dest
 }
 
 // Serve a reverse proxy for a given url
 func serveReverseProxy(target string, res http.ResponseWriter, req *http.Request) {
 	url, _ := url.Parse(target)
-	proxy := httputil.NewSingleHostReverseProxy(url)
+	ps := httputil.NewSingleHostReverseProxy(url)
 
 	// Updates the headers to allow for SSL redirection
 	req.URL.Host = url.Host
+	req.URL.Path = ""
 	req.URL.Scheme = url.Scheme
 	req.Header.Set("X-Forwarded-Host", req.Header.Get("Host"))
 	req.Host = url.Host
 
 	// Note that ServeHttp is non blocking and uses a go routine under the hood
-	proxy.ServeHTTP(res, req)
+	ps.ServeHTTP(res, req)
 }
 
 // intersect was copied from https://stackoverflow.com/a/31069616/136492
