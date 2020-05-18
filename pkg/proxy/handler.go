@@ -12,12 +12,13 @@ import (
 )
 
 func RedirectHandler(res http.ResponseWriter, req *http.Request) {
-	var dest config.Destination
-
-	if dest := GetDestination(req); dest == nil {
+	dest := GetDestination(req)
+	if dest == nil {
 		serveReverseProxy(req.URL.String(), res, req)
+		return
 	}
 	serveReverseProxy(dest.URL, res, req)
+	return
 }
 
 func GetDestination(req *http.Request) *config.Destination {
