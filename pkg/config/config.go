@@ -15,6 +15,7 @@ var once sync.Once
 // Config represents structure of MicroProxy config.
 type Config struct {
 	FilePath string `json:"file_path"`
+	Server   Server `json:"server"`
 	Route    Route  `json:"route"`
 }
 
