@@ -12,8 +12,11 @@ import (
 )
 
 func RedirectHandler(res http.ResponseWriter, req *http.Request) {
-	dest := GetDestination(req)
+	var dest config.Destination
 
+	if dest := GetDestination(req); dest == nil {
+		serveReverseProxy(req.URL.String(), res, req)
+	}
 	serveReverseProxy(dest.URL, res, req)
 }
 
@@ -55,7 +58,7 @@ func GetDestination(req *http.Request) *config.Destination {
 		}
 	}
 
-	return dest
+	return nil
 }
 
 // Serve a reverse proxy for a given url
