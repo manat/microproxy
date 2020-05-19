@@ -42,8 +42,11 @@ func loadConfig(reload bool) {
 
 	log.Println(k.All())
 	c := config.Instance
-	c.FilePath = filePath
 	k.UnmarshalWithConf("", &c, koanf.UnmarshalConf{Tag: "json"})
+
+	// TODO: FilePath should not be changed from config file.
+	// Override the value from the Env for now.
+	c.FilePath = filePath
 
 	if reload {
 		f.Watch(func(event interface{}, err error) {

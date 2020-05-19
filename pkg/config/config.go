@@ -35,6 +35,7 @@ func newConfig() *Config {
 
 // Save persists the specified value into the file, as specified on Config.FilePath.
 func (c *Config) Save(b []byte) (int, error) {
+	log.Printf("File to save: %s", c.FilePath)
 	if c.FilePath == "" {
 		panic("*Config must have FilePath value specified.")
 	}
