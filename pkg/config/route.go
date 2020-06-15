@@ -18,6 +18,7 @@ type Route struct {
 // Destination represents info of the destination node.
 type Destination struct {
 	ID      string `json:"id"`
+	Host    string `json:"host"`
 	URL     string `json:"url"`
 	Default bool   `json:"default"`
 }

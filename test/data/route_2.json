@@ -1,0 +1,63 @@
+{
+    "destinations": [
+        {
+            "id": "mock1",
+            "host": "http://dev-channel-bridge-1a-0.acommercedev.platform:12002",
+            "default": true
+        },
+        {
+            "id": "mock2",
+            "host": "http://dev-channel-bridge-1a-0.acommercedev.platform:12011",
+            "default": false
+        },
+        {
+            "id": "mock3",
+            "host": "http://dev-channel-bridge-1a-0.acommercedev.platform:12021",
+            "default": false
+        }
+    ],
+    "rules": [
+        {
+            "path": "/orders/basics",
+            "payload": {
+                "shopid": 5678000
+            },
+            "destination_id": "mock1"
+        },
+        {
+            "path": "/orders/detail",
+            "payload": {
+                "shopid": 5678000
+            },
+            "destination_id": "mock1"
+        },
+        {
+            "path": "/orders/my_income",
+            "payload": {
+                "shopid": 5678000
+            },
+            "destination_id": "mock1"
+        },
+        {
+            "path": "/orders/basics",
+            "payload": {
+                "shopid": 250725
+            },
+            "destination_id": "mock3"
+        },
+        {
+            "path": "/orders/detail",
+            "payload": {
+                "shopid": 250725
+            },
+            "destination_id": "mock3"
+        },
+        {
+            "path": "/orders/my_income",
+            "payload": {
+                "shopid": 250725
+            },
+            "destination_id": "mock1"
+        }
+    ]
+}

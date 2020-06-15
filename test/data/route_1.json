@@ -12,6 +12,10 @@
         {
             "id": "mock3",
             "url": "http://example3.com"
+        },
+        {
+            "id": "mock4",
+            "host": "http://google.com"
         }
     ],
     "rules": [
@@ -28,6 +32,13 @@
                 "shopid": 5678
             },
             "destination_id": "mock2"
+        },
+        {
+            "path": "/expenses/12345",
+            "payload": {
+                "shopid": 5678
+            },
+            "destination_id": "mock4"
         },
         {
             "path": "/expenses",

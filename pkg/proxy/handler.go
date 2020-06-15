@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"regexp"
 	"strings"
 
 	"github.com/manat/microproxy/pkg/config"
@@ -16,11 +17,25 @@ import (
 func RedirectHandler(res http.ResponseWriter, req *http.Request) {
 	dest := GetDestination(req)
 	log.Println(dest)
+
+	if dest == nil {
+		serveReverseProxy(req.URL.String(), res, req)
+		return
+	}
+
 	if dest.ID == "" {
 		serveReverseProxy(req.URL.String(), res, req)
 		return
 	}
-	serveReverseProxy(dest.URL, res, req)
+
+	if dest.Host == "" {
+		serveReverseProxy(dest.URL, res, req)
+		return
+	}
+
+	re := regexp.MustCompile(`(https?://.*):(\d*)`)
+	newURL := re.ReplaceAllString(req.URL.String(), dest.Host)
+	serveReverseProxy(newURL, res, req)
 	return
 }
 
@@ -71,7 +86,7 @@ func serveReverseProxy(target string, res http.ResponseWriter, req *http.Request
 
 	// Updates the headers to allow for SSL redirection
 	req.URL.Host = url.Host
-	req.URL.Path = ""
+	// req.URL.Path = ""
 	req.URL.Scheme = url.Scheme
 	req.Header.Set("X-Forwarded-Host", req.Header.Get("Host"))
 	req.Host = url.Host
